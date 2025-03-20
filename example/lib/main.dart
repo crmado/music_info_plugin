@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
 import 'package:music_info_plugin/music_info_plugin.dart';
@@ -19,6 +20,7 @@ class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
   bool _hasPermission = false;
   Map<String, String>? _trackInfo;
+  Uint8List? _artworkData;
   String _statusMessage = '';
   final _musicInfoPlugin = MusicInfoPlugin();
 
@@ -83,9 +85,44 @@ class _MyAppState extends State<MyApp> {
           _statusMessage = '成功獲取音樂信息';
         }
       });
+
+      // 如果有封面，則獲取封面
+      if (trackInfo != null && trackInfo["hasArtwork"] == "true") {
+        _getCurrentTrackArtwork();
+      } else {
+        setState(() {
+          _artworkData = null;
+        });
+      }
     } on PlatformException catch (e) {
       setState(() {
         _statusMessage = '獲取音樂信息失敗: ${e.message}';
+      });
+    }
+  }
+
+  Future<void> _getCurrentTrackArtwork() async {
+    if (!_hasPermission) {
+      setState(() {
+        _statusMessage = '請先獲取權限';
+      });
+      return;
+    }
+
+    try {
+      final artworkData = await _musicInfoPlugin.getCurrentTrackArtwork();
+      setState(() {
+        _artworkData = artworkData;
+        if (artworkData == null) {
+          _statusMessage = '${_statusMessage}，無法獲取專輯封面';
+        } else {
+          _statusMessage = '${_statusMessage}，成功獲取專輯封面';
+        }
+      });
+    } on PlatformException catch (e) {
+      setState(() {
+        _artworkData = null;
+        _statusMessage = '獲取專輯封面失敗: ${e.message}';
       });
     }
   }
@@ -116,6 +153,23 @@ class _MyAppState extends State<MyApp> {
               const SizedBox(height: 10),
               Text('狀態: $_statusMessage'),
               const SizedBox(height: 20),
+              if (_artworkData != null) ...[
+                const Text(
+                  '專輯封面:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 10),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8.0),
+                  child: Image.memory(
+                    _artworkData!,
+                    width: 150,
+                    height: 150,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
               if (_trackInfo != null) ...[
                 const Text(
                   '音樂信息:',
@@ -126,6 +180,10 @@ class _MyAppState extends State<MyApp> {
                   child: ListView(
                     children:
                         _trackInfo!.entries.map((entry) {
+                          // 不顯示 hasArtwork 字段，因為已經在界面上顯示了專輯封面
+                          if (entry.key == 'hasArtwork')
+                            return const SizedBox.shrink();
+
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4.0),
                             child: Row(

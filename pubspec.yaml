@@ -1,8 +1,10 @@
 name: music_info_plugin
-description: "Flutter 插件，用於獲取 iOS 設備上當前正在播放的音樂信息。"
-version: 0.1.0
-homepage: https://github.com/你的用戶名/music_info_plugin
-repository: https://github.com/你的用戶名/music_info_plugin
+description: "Flutter 插件，用於獲取 iOS 設備上當前正在播放的音樂信息，包括標題、藝術家、專輯詳情及封面圖像。"
+version: 0.1.1
+homepage: https://github.com/crmado/music_info_plugin
+repository: https://github.com/crmado/music_info_plugin
+issue_tracker: https://github.com/crmado/music_info_plugin/issues
+documentation: https://github.com/crmado/music_info_plugin/blob/main/README.md
 
 environment:
   sdk: ^3.7.2

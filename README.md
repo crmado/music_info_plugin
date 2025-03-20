@@ -1,10 +1,11 @@
 # Music Info Plugin
 
-這是一個 Flutter 插件，專為獲取 iOS 設備上當前正在播放的音樂信息而設計。透過此插件，你可以在 Flutter 應用中輕鬆獲取當前正在播放的音樂標題、藝術家、專輯等信息。
+這是一個 Flutter 插件，專為獲取 iOS 設備上當前正在播放的音樂信息而設計。透過此插件，你可以在 Flutter 應用中輕鬆獲取當前正在播放的音樂標題、藝術家、專輯等信息，以及音樂的專輯封面圖像。
 
 ## 功能特點
 
 - 獲取 iOS 設備上當前播放的音樂詳細信息
+- 獲取當前播放音樂的專輯封面圖像（如果有）
 - 支持獲取以下音樂信息（如果有）：
   - 歌曲標題 (title)
   - 藝術家 (artist)
@@ -16,6 +17,7 @@
   - 音軌編號 (trackNumber)
   - 碟片編號 (discNumber)
   - 播放次數 (playCount)
+  - 是否有專輯封面 (hasArtwork)
 - 內建媒體庫權限請求和狀態檢查
 - 簡潔易用的 API 接口
 
@@ -65,6 +67,8 @@ flutter pub get
 
 ```dart
 import 'package:music_info_plugin/music_info_plugin.dart';
+import 'package:flutter/material.dart';
+import 'dart:typed_data';
 
 // 創建插件實例
 final musicInfoPlugin = MusicInfoPlugin();
@@ -80,7 +84,16 @@ if (hasPermission) {
     // 處理獲取到的音樂信息
     print('正在播放: ${trackInfo['title']} - ${trackInfo['artist']}');
     print('專輯: ${trackInfo['albumTitle']}');
-    // ... 其他信息
+    
+    // 檢查是否有專輯封面
+    if (trackInfo['hasArtwork'] == 'true') {
+      // 獲取專輯封面
+      final Uint8List? artworkData = await musicInfoPlugin.getCurrentTrackArtwork();
+      if (artworkData != null) {
+        // 使用 Image.memory 顯示專輯封面
+        Image.memory(artworkData)
+      }
+    }
   } else {
     print('沒有正在播放的音樂');
   }
@@ -91,7 +104,7 @@ if (hasPermission) {
 
 ### 完整示例
 
-請參考 `example` 目錄中的示例應用，它展示了如何使用此插件獲取音樂信息，並以列表形式顯示所有可用信息。
+請參考 `example` 目錄中的示例應用，它展示了如何使用此插件獲取音樂信息和專輯封面，並以列表形式顯示所有可用信息。
 
 ## 方法說明
 
@@ -99,6 +112,7 @@ if (hasPermission) {
 |------|------|--------|
 | `requestMediaPermission()` | 請求媒體庫訪問權限 | `Future<bool>` |
 | `getCurrentTrackInfo()` | 獲取當前正在播放的音樂信息 | `Future<Map<String, String>?>` |
+| `getCurrentTrackArtwork()` | 獲取當前正在播放音樂的專輯封面 | `Future<Uint8List?>` |
 | `getPlatformVersion()` | 獲取平台版本信息 | `Future<String?>` |
 
 ## 常見問題與注意事項
@@ -109,9 +123,11 @@ if (hasPermission) {
 
 3. **音樂播放源限制**：此插件僅能獲取通過系統音樂播放器（如 Apple Music 或 iTunes）播放的音樂信息，無法獲取第三方音樂應用（如 Spotify、YouTube Music 等）播放的音樂信息。
 
-4. **無播放音樂時**：當沒有正在播放的音樂時，`getCurrentTrackInfo()` 方法會返回 `null`。
+4. **無播放音樂時**：當沒有正在播放的音樂時，`getCurrentTrackInfo()` 和 `getCurrentTrackArtwork()` 方法會返回 `null`。
 
-5. **信息可用性**：返回的音樂信息取決於當前播放音樂的元數據完整性，某些音樂可能缺少部分信息。
+5. **信息可用性**：返回的音樂信息取決於當前播放音樂的元數據完整性，某些音樂可能缺少部分信息或沒有專輯封面。
+
+6. **專輯封面尺寸**：專輯封面默認以 300×300 像素的尺寸返回，可以使用 Flutter 的 Image 小部件進行縮放或裁剪。
 
 ## 故障排除
 

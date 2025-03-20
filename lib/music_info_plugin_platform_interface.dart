@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'music_info_plugin_method_channel.dart';
@@ -39,5 +40,13 @@ abstract class MusicInfoPluginPlatform extends PlatformInterface {
   /// 返回一個 [Map<String, String>?] 包含音樂信息，如果沒有正在播放的音樂則返回 null
   Future<Map<String, String>?> getCurrentTrackInfo() {
     throw UnimplementedError('getCurrentTrackInfo() has not been implemented.');
+  }
+
+  /// 獲取當前正在播放音樂的專輯封面
+  /// 返回 [Uint8List?] 包含圖片數據，如果沒有專輯封面或沒有正在播放的音樂則返回 null
+  Future<Uint8List?> getCurrentTrackArtwork() {
+    throw UnimplementedError(
+      'getCurrentTrackArtwork() has not been implemented.',
+    );
   }
 }

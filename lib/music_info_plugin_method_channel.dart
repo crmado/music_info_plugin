@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -37,5 +38,13 @@ class MethodChannelMusicInfoPlugin extends MusicInfoPluginPlatform {
     return result.map(
       (key, value) => MapEntry(key.toString(), value.toString()),
     );
+  }
+
+  @override
+  Future<Uint8List?> getCurrentTrackArtwork() async {
+    final Uint8List? result = await methodChannel.invokeMethod<Uint8List>(
+      'getCurrentTrackArtwork',
+    );
+    return result;
   }
 }
