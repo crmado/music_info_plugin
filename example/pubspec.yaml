@@ -1,5 +1,5 @@
 name: music_info_plugin_example
-description: "Demonstrates how to use the music_info_plugin plugin."
+description: "演示如何使用 music_info_plugin 插件獲取 iOS 音樂信息和專輯封面。"
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
